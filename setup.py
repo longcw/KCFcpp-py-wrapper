@@ -31,7 +31,8 @@ ext = [
 ]
 
 setup(
-    name='app',
+    name='KCFcpp',
+    version='0.0.1',
     cmdclass={'build_ext': build_ext},
     ext_modules=ext
 )

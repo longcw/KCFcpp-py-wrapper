@@ -169,6 +169,44 @@ void KCFTracker::init(const cv::Rect &roi, cv::Mat image)
     //_den = cv::Mat(size_patch[0], size_patch[1], CV_32FC2, float(0));
     train(_tmpl, 1.0); // train with initial frame
  }
+
+void KCFTracker::update_(const cv::Rect &roi, cv::Mat image, double interp_factor)
+{
+    _roi = roi;
+    cv::Mat x = getFeatures(image, 0);
+    train(x, interp_factor);
+}
+
+cv::Rect KCFTracker::predict(cv::Mat image)
+{   
+    if (_roi.x + _roi.width <= 0) _roi.x = -_roi.width + 1;
+    if (_roi.y + _roi.height <= 0) _roi.y = -_roi.height + 1;
+    if (_roi.x >= image.cols - 1) _roi.x = image.cols - 2;
+    if (_roi.y >= image.rows - 1) _roi.y = image.rows - 2;
+
+    float cx = _roi.x + _roi.width / 2.0f;
+    float cy = _roi.y + _roi.height / 2.0f;
+
+
+    float peak_value;
+    cv::Point2f res = detect(_tmpl, getFeatures(image, 0, 1.0f), peak_value);
+
+    // Adjust by cell size and _scale
+    _roi.x = cx - _roi.width / 2.0f + ((float) res.x * cell_size * _scale);
+    _roi.y = cy - _roi.height / 2.0f + ((float) res.y * cell_size * _scale);
+
+    if (_roi.x >= image.cols - 1) _roi.x = image.cols - 1;
+    if (_roi.y >= image.rows - 1) _roi.y = image.rows - 1;
+    if (_roi.x + _roi.width <= 0) _roi.x = -_roi.width + 2;
+    if (_roi.y + _roi.height <= 0) _roi.y = -_roi.height + 2;
+
+    // assert(_roi.width >= 0 && _roi.height >= 0);
+    // cv::Mat x = getFeatures(image, 0);
+    // train(x, interp_factor);
+
+    return _roi;
+}
+
 // Update position based on the new frame
 cv::Rect KCFTracker::update(cv::Mat image)
 {
@@ -218,9 +256,9 @@ cv::Rect KCFTracker::update(cv::Mat image)
     if (_roi.x + _roi.width <= 0) _roi.x = -_roi.width + 2;
     if (_roi.y + _roi.height <= 0) _roi.y = -_roi.height + 2;
 
-    assert(_roi.width >= 0 && _roi.height >= 0);
-    cv::Mat x = getFeatures(image, 0);
-    train(x, interp_factor);
+     assert(_roi.width >= 0 && _roi.height >= 0);
+     cv::Mat x = getFeatures(image, 0);
+     train(x, interp_factor);
 
     return _roi;
 }

@@ -74,5 +74,9 @@ cdef inline Rect pylist2cvrect(list rectlist):
 	cdef Rect rect = Rect(rectlist[0], rectlist[1], rectlist[2], rectlist[3])
 	return rect
 
+cdef inline Rect nparray2cvrect(np.ndarray rectlist):
+	cdef Rect rect = Rect(rectlist[0], rectlist[1], rectlist[2], rectlist[3])
+	return rect
+
 cdef inline list cvrect2pylist(Rect &rect):
 	return [rect.x, rect.y, rect.width, rect.height]

@@ -170,11 +170,16 @@ void KCFTracker::init(const cv::Rect &roi, cv::Mat image)
     train(_tmpl, 1.0); // train with initial frame
  }
 
-void KCFTracker::update_(const cv::Rect &roi, cv::Mat image, double interp_factor)
+void KCFTracker::update_model(const cv::Rect &roi, cv::Mat image, double interp_factor)
 {
     _roi = roi;
     cv::Mat x = getFeatures(image, 0);
     train(x, interp_factor);
+}
+
+void KCFTracker::update_roi(const cv::Rect &roi)
+{
+    _roi = roi;
 }
 
 cv::Rect KCFTracker::predict(cv::Mat image)

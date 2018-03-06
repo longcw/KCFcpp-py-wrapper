@@ -97,7 +97,8 @@ public:
     // Initialize tracker 
     virtual void init(const cv::Rect &roi, cv::Mat image);
 
-    virtual void update_(const cv::Rect &roi, cv::Mat image, double interp_factor);
+    virtual void update_model(const cv::Rect &roi, cv::Mat image, double interp_factor);
+    virtual void update_roi(const cv::Rect &roi);
 
     virtual cv::Rect predict(cv::Mat image);
     
